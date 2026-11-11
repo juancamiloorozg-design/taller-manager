@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Respaldos', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <h1 class="h3 mb-0">Respaldos</h1>
+        <form th:action="@{/admin/respaldos}" method="post" class="m-0">
+            <button type="submit" class="btn btn-primary">Crear respaldo ahora</button>
+        </form>
+    </div>
+    <p class="text-muted texto-legal">Cada noche a las 2:00 a. m. se guarda un zip con todas las tablas en CSV y las fotos de recepción.
+        Se conservan los más recientes. Las claves de los usuarios no se incluyen. Descarga uno de vez en cuando y guárdalo fuera de este computador.</p>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Archivo</th><th>Fecha</th><th class="text-end">Tamaño</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${respaldos}">
+                <td th:text="${r.nombre}"></td>
+                <td th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(r.bytes / 1024.0, 1, 0)} + ' KB'"></td>
+                <td class="text-end"><a class="btn btn-outline-primary btn-sm" th:href="@{/admin/respaldos/{n}(n=${r.nombre})}">Descargar</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(respaldos)}"><td colspan="4" class="text-center text-muted py-3">Todavía no hay respaldos.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Orden de servicio', ~{::section})}">
+<body>
+<section>
+    <div class="no-print mb-3">
+        <button type="button" class="btn btn-primary" data-print>Imprimir</button>
+        <a class="btn btn-outline-secondary" th:href="@{/ordenes/{id}(id=${orden.id})}">Volver</a>
+    </div>
+
+    <article class="hoja-orden">
+        <header class="d-flex justify-content-between flex-wrap gap-3 border-bottom pb-3 mb-3">
+            <div>
+                <h1 class="h4 mb-1" th:text="${empresa.nombre}">Taller</h1>
+                <div class="small" th:text="'NIT ' + ${empresa.nit}"></div>
+                <div class="small" th:text="${empresa.direccion + ', ' + empresa.ciudad}"></div>
+                <div class="small" th:text="${empresa.telefono + ' - ' + empresa.email}"></div>
+            </div>
+            <div class="text-end">
+                <h2 class="h5 mb-1" th:text="${orden.estado.name() == 'COTIZADA' ? 'Cotización #' : 'Orden de servicio #'} + ${orden.id}">Orden</h2>
+                <div class="small" th:text="'Fecha: ' + ${#temporals.format(orden.creadoEn, 'dd/MM/yyyy HH:mm')}"></div>
+                <div class="small" th:text="'Estado: ' + ${orden.estado.etiqueta}"></div>
+            </div>
+        </header>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="fw-semibold">Cliente</div>
+                <div th:text="${orden.vehiculo.cliente.nombre}"></div>
+                <div class="small" th:if="${orden.vehiculo.cliente.telefono != null}" th:text="${orden.vehiculo.cliente.telefono}"></div>
+            </div>
+            <div class="col-6">
+                <div class="fw-semibold">Vehículo</div>
+                <div th:text="${orden.vehiculo.placa + ' - ' + orden.vehiculo.marca + ' ' + orden.vehiculo.modelo + ' ' + orden.vehiculo.anio}"></div>
+                <div class="small" th:if="${orden.kilometraje != null}" th:text="'Kilometraje: ' + ${#numbers.formatInteger(orden.kilometraje, 1, 'POINT')} + ' km'"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="fw-semibold">Trabajo</div>
+            <div th:text="${orden.descripcion}"></div>
+        </div>
+
+        <div class="mb-3 small" th:if="${orden.nivelCombustible != null or orden.danosVisibles != null or orden.objetosDejados != null or orden.mecanico != null}">
+            <div class="fw-semibold">Recepción del vehículo</div>
+            <div th:if="${orden.nivelCombustible != null}" th:text="'Combustible: ' + ${orden.nivelCombustible.etiqueta}"></div>
+            <div th:if="${orden.danosVisibles != null}" th:text="'Daños que se ven: ' + ${orden.danosVisibles}"></div>
+            <div th:if="${orden.objetosDejados != null}" th:text="'Objetos dejados: ' + ${orden.objetosDejados}"></div>
+            <div th:if="${orden.mecanico != null}" th:text="'Mecánico: ' + ${orden.mecanico.nombre}"></div>
+        </div>
+
+        <table class="table table-sm">
+            <thead><tr><th>Repuesto</th><th class="text-end">Cant.</th><th class="text-end">Precio</th><th class="text-end">Subtotal</th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${orden.detalle}">
+                <td th:text="${l.repuesto.nombre}"></td>
+                <td class="text-end" th:text="${l.cantidad}"></td>
+                <td class="text-end" th:text="${@fmt.cop(l.precioUnitario)}"></td>
+                <td class="text-end" th:text="${@fmt.cop(l.subtotal)}"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr><td colspan="3" class="text-end">Mano de obra</td><td class="text-end" th:text="${@fmt.cop(orden.manoObra)}"></td></tr>
+            <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end" th:text="${@fmt.cop(orden.total)}"></td></tr>
+            <tr th:if="${abonado.signum() > 0}"><td colspan="3" class="text-end">Abonado</td><td class="text-end" th:text="${@fmt.cop(abonado)}"></td></tr>
+            <tr th:if="${abonado.signum() > 0}" class="fw-bold"><td colspan="3" class="text-end">Saldo</td><td class="text-end" th:text="${@fmt.cop(saldo)}"></td></tr>
+            </tfoot>
+        </table>
+
+        <p class="small mt-3 mb-0" th:if="${orden.estado.name() == 'COTIZADA'}"
+           th:text="'Esta cotización es válida por ' + ${empresa.cotizacionDias} + ' días desde la fecha de arriba. No incluye trabajos adicionales que no hayan sido aprobados por el cliente.'"></p>
+
+        <div class="row mt-5 pt-4">
+            <div class="col-6"><div class="border-top pt-1 small" th:text="${orden.estado.name() == 'COTIZADA' ? 'Aprobado por el cliente' : 'Recibí a conformidad'}">Firma</div></div>
+            <div class="col-6"><div class="border-top pt-1 small">Cédula</div></div>
+        </div>
+
+        <p class="small text-muted mt-4 mb-0">
+            Este documento es una orden de servicio y no reemplaza la factura electrónica de venta.
+            La garantía de los trabajos y repuestos se rige por la Ley 1480 de 2011 (Estatuto del Consumidor)
+            y por las condiciones que el taller haya acordado con el cliente.
+            Tus datos personales se tratan según la política publicada en el sitio del taller.
+        </p>
+    </article>
+</section>
+</body>
+</html>

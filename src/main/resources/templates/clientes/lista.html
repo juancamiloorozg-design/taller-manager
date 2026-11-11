@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Clientes', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Clientes</h1>
+        <a class="btn btn-primary" th:href="@{/clientes/nuevo}">Nuevo cliente</a>
+    </div>
+
+    <form th:action="@{/clientes}" method="get" class="d-flex gap-2 mb-3">
+        <input type="search" name="q" th:value="${q}" class="form-control"
+               placeholder="Buscar por nombre, documento o teléfono" aria-label="Buscar clientes" maxlength="60">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+    </form>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr><th>Nombre</th><th>Documento</th><th>Teléfono</th><th>Correo</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${pagina.content}">
+                <td th:text="${c.nombre}"></td>
+                <td th:text="${c.anonimizado} ? '-' : ${c.tipoDocumento + ' ' + c.numeroDocumento}"></td>
+                <td th:text="${c.telefono != null} ? ${c.telefono} : '-'"></td>
+                <td th:text="${c.email != null} ? ${c.email} : '-'"></td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-secondary" th:href="@{/clientes/{id}(id=${c.id})}">Ver</a></td>
+            </tr>
+            <tr th:if="${pagina.empty}"><td colspan="5" class="text-center text-muted py-4">No hay clientes con ese criterio.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:replace="~{fragments/paginacion :: paginacion(${pagina}, ${urlBase}, ${q}, '')}"></th:block>
+</section>
+</body>
+</html>

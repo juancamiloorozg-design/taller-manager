@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Nueva orden', ~{::section})}">
+<body>
+<section class="caja-form">
+    <h1 class="h3 mb-3" th:text="${ordenForm.cotizacion} ? 'Nueva cotización' : 'Nueva orden de servicio'">Nueva orden de servicio</h1>
+
+    <form th:action="@{/ordenes}" th:object="${ordenForm}" method="post" class="card card-body" novalidate>
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="vehiculoId" class="form-label">Vehículo</label>
+                <select id="vehiculoId" class="form-select" th:field="*{vehiculoId}"
+                        th:classappend="${#fields.hasErrors('vehiculoId')} ? 'is-invalid'">
+                    <option value="">Selecciona un vehículo</option>
+                    <option th:each="v : ${vehiculos}" th:value="${v.id}"
+                            th:text="${v.placa + ' - ' + v.marca + ' ' + v.modelo + ' (' + v.cliente.nombre + ')'}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('vehiculoId')}" th:errors="*{vehiculoId}"></div>
+                <div class="form-text" th:if="${#lists.isEmpty(vehiculos)}">
+                    Primero <a th:href="@{/vehiculos/nuevo}">registra un vehículo</a>.
+                </div>
+            </div>
+            <div class="col-12">
+                <label for="descripcion" class="form-label">Trabajo a realizar</label>
+                <textarea id="descripcion" rows="3" class="form-control" th:field="*{descripcion}" maxlength="500"
+                          th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid'"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="kilometraje" class="form-label">Kilometraje</label>
+                <input id="kilometraje" type="number" min="0" class="form-control" th:field="*{kilometraje}"
+                       th:classappend="${#fields.hasErrors('kilometraje')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('kilometraje')}" th:errors="*{kilometraje}"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="manoObra" class="form-label">Mano de obra (COP)</label>
+                <input id="manoObra" type="number" step="0.01" min="0" class="form-control" th:field="*{manoObra}"
+                       th:classappend="${#fields.hasErrors('manoObra')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('manoObra')}" th:errors="*{manoObra}"></div>
+            </div>
+        </div>
+
+        <th:block th:replace="~{fragments/recepcion :: campos}"></th:block>
+
+        <div class="form-check mt-4">
+            <input id="cotizacion" type="checkbox" class="form-check-input" th:field="*{cotizacion}">
+            <label for="cotizacion" class="form-check-label">Es una cotización: el cliente debe aprobarla antes de empezar</label>
+        </div>
+
+        <h2 class="h6 mt-4">Repuestos (opcional)</h2>
+        <p class="form-text">Pon la cantidad en los que se van a usar. Se descuentan del stock al crear la orden (en una cotización quedan reservados; si se cancela, vuelven).</p>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(repuestos)}">
+            <table class="table table-sm align-middle">
+                <thead><tr><th>Repuesto</th><th class="text-end">Precio</th><th class="text-end">Disponibles</th><th>Cantidad</th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${repuestos}">
+                    <td th:text="${r.nombre}"></td>
+                    <td class="text-end" th:text="${@fmt.cop(r.precio)}"></td>
+                    <td class="text-end" th:text="${r.stock}"></td>
+                    <td>
+                        <input type="number" min="0" th:max="${r.stock}" class="form-control form-control-sm ancho-numero"
+                               th:name="|cantidades[${r.id}]|" th:attr="data-precio=${r.precio}"
+                               th:value="${ordenForm.cantidades[r.id]}" th:aria-label="'Cantidad de ' + ${r.nombre}">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted" th:if="${#lists.isEmpty(repuestos)}">No hay repuestos con existencias.</p>
+
+        <p class="fs-5 mt-3 mb-0">Total estimado: <strong id="total-estimado">$ 0</strong></p>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a class="btn btn-outline-secondary" th:href="@{/ordenes}">Cancelar</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

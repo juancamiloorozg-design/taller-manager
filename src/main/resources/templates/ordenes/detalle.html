@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout('Orden de servicio', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">
+            <span th:text="${orden.estado.name() == 'COTIZADA' ? 'Cotización #' : 'Orden #'} + ${orden.id}">Orden</span>
+            <span class="badge fs-6 align-middle" th:classappend="'text-bg-' + ${orden.estado.color}" th:text="${orden.estado.etiqueta}"></span>
+        </h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary" th:href="@{/ordenes/{id}/imprimir(id=${orden.id})}" target="_blank" rel="noopener">Versión para imprimir</a>
+            <th:block th:unless="${orden.estado.terminal}">
+                <a class="btn btn-outline-secondary" th:href="@{/ordenes/{id}/editar(id=${orden.id})}">Editar</a>
+                <form th:action="@{/ordenes/{id}/avanzar(id=${orden.id})}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-primary"
+                            th:text="${orden.estado.name() == 'COTIZADA'} ? 'Aprobar cotización' : (${orden.estado.name() == 'PENDIENTE'} ? 'Iniciar trabajo' : 'Marcar como finalizada')">Avanzar</button>
+                </form>
+                <form th:action="@{/ordenes/{id}/cancelar(id=${orden.id})}" method="post" class="m-0"
+                      data-confirm="¿Cancelar? Los repuestos vuelven al stock.">
+                    <button type="submit" class="btn btn-outline-danger">Cancelar</button>
+                </form>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-3 no-print">
+        <a class="btn btn-sm btn-success" th:if="${orden.estado.name() == 'FINALIZADA' and @msg.listo(orden) != null}"
+           th:href="${@msg.listo(orden)}" target="_blank" rel="noopener noreferrer">Avisar por WhatsApp que está listo</a>
+        <a class="btn btn-sm btn-success" th:if="${orden.estado.name() == 'COTIZADA' and @msg.cotizacion(orden) != null}"
+           th:href="${@msg.cotizacion(orden)}" target="_blank" rel="noopener noreferrer">Enviar cotización por WhatsApp</a>
+    </div>
+
+    <div class="card card-body mb-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Vehículo</dt>
+            <dd class="col-sm-9"><a th:href="@{/vehiculos/{id}(id=${orden.vehiculo.id})}"
+                                    th:text="${orden.vehiculo.marca + ' ' + orden.vehiculo.modelo}"></a> <span class="placa" th:text="${orden.vehiculo.placa}"></span></dd>
+            <dt class="col-sm-3">Cliente</dt>
+            <dd class="col-sm-9"><a th:href="@{/clientes/{id}(id=${orden.vehiculo.cliente.id})}" th:text="${orden.vehiculo.cliente.nombre}"></a></dd>
+            <dt class="col-sm-3">Trabajo</dt>
+            <dd class="col-sm-9" th:text="${orden.descripcion}"></dd>
+            <dt class="col-sm-3">Mecánico</dt>
+            <dd class="col-sm-9" th:text="${orden.mecanico != null} ? ${orden.mecanico.nombre} : 'Sin asignar'"></dd>
+            <dt class="col-sm-3">Kilometraje</dt>
+            <dd class="col-sm-9" th:text="${orden.kilometraje != null} ? ${#numbers.formatInteger(orden.kilometraje, 1, 'POINT')} + ' km' : '-'"></dd>
+            <dt class="col-sm-3">Combustible</dt>
+            <dd class="col-sm-9" th:text="${orden.nivelCombustible != null} ? ${orden.nivelCombustible.etiqueta} : '-'"></dd>
+            <dt class="col-sm-3">Daños que se ven</dt>
+            <dd class="col-sm-9" th:text="${orden.danosVisibles != null} ? ${orden.danosVisibles} : '-'"></dd>
+            <dt class="col-sm-3">Objetos dejados</dt>
+            <dd class="col-sm-9" th:text="${orden.objetosDejados != null} ? ${orden.objetosDejados} : '-'"></dd>
+            <dt class="col-sm-3">Creada</dt>
+            <dd class="col-sm-9" th:text="${#temporals.format(orden.creadoEn, 'dd/MM/yyyy HH:mm')} + ' por ' + ${orden.creadoPor}"></dd>
+            <dt class="col-sm-3" th:if="${orden.aprobadaEn != null}">Aprobada</dt>
+            <dd class="col-sm-9" th:if="${orden.aprobadaEn != null}" th:text="${#temporals.format(orden.aprobadaEn, 'dd/MM/yyyy HH:mm')}"></dd>
+            <dt class="col-sm-3" th:if="${orden.finalizadoEn != null}">Finalizada</dt>
+            <dd class="col-sm-9" th:if="${orden.finalizadoEn != null}" th:text="${#temporals.format(orden.finalizadoEn, 'dd/MM/yyyy HH:mm')}"></dd>
+        </dl>
+    </div>
+
+    <h2 class="h5">Repuestos usados</h2>
+    <div class="table-tarjeta table-responsive mb-3">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Repuesto</th><th class="text-end">Cantidad</th><th class="text-end">Precio</th><th class="text-end">Subtotal</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${orden.detalle}">
+                <td th:text="${l.repuesto.nombre}"></td>
+                <td class="text-end" th:text="${l.cantidad}"></td>
+                <td class="text-end" th:text="${@fmt.cop(l.precioUnitario)}"></td>
+                <td class="text-end" th:text="${@fmt.cop(l.subtotal)}"></td>
+                <td class="text-end">
+                    <form th:unless="${orden.estado.terminal}"
+                          th:action="@{/ordenes/{id}/repuestos/{linea}/quitar(id=${orden.id}, linea=${l.id})}" method="post" class="m-0"
+                          data-confirm="¿Quitar este repuesto? Las unidades vuelven al stock.">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(orden.detalle)}"><td colspan="5" class="text-center text-muted py-3">Sin repuestos.</td></tr>
+            </tbody>
+            <tfoot>
+            <tr><td colspan="3" class="text-end">Repuestos</td><td class="text-end" th:text="${@fmt.cop(orden.totalRepuestos)}"></td><td></td></tr>
+            <tr><td colspan="3" class="text-end">Mano de obra</td><td class="text-end" th:text="${@fmt.cop(orden.manoObra)}"></td><td></td></tr>
+            <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end" th:text="${@fmt.cop(orden.total)}"></td><td></td></tr>
+            <tr><td colspan="3" class="text-end">Abonado</td><td class="text-end" th:text="${@fmt.cop(abonado)}"></td><td></td></tr>
+            <tr class="fw-bold"><td colspan="3" class="text-end">Saldo</td><td class="text-end" th:text="${@fmt.cop(saldo)}"></td><td></td></tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <form th:unless="${orden.estado.terminal}" th:action="@{/ordenes/{id}/repuestos(id=${orden.id})}" method="post"
+          class="card card-body mb-4">
+        <h3 class="h6">Agregar repuesto</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <select name="repuestoId" class="form-select w-auto ancho-clave" required aria-label="Repuesto">
+                <option value="">Selecciona un repuesto</option>
+                <option th:each="r : ${repuestos}" th:value="${r.id}"
+                        th:text="${r.nombre + ' (' + r.stock + ' disp.)'}"></option>
+            </select>
+            <input type="number" name="cantidad" min="1" value="1" class="form-control ancho-numero" required aria-label="Cantidad">
+            <button type="submit" class="btn btn-outline-primary">Agregar</button>
+        </div>
+    </form>
+
+    <h2 class="h5">Abonos</h2>
+    <div class="table-tarjeta table-responsive mb-3">
+        <table class="table table-sm align-middle mb-0">
+            <thead><tr><th>Fecha</th><th>Medio</th><th>Nota</th><th>Registró</th><th class="text-end">Valor</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="p : ${pagos}">
+                <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${p.metodo.etiqueta}"></td>
+                <td th:text="${p.nota != null} ? ${p.nota} : '-'"></td>
+                <td th:text="${p.registradoPor}"></td>
+                <td class="text-end" th:text="${@fmt.cop(p.monto)}"></td>
+                <td class="text-end">
+                    <form th:action="@{/ordenes/{id}/pagos/{pago}/anular(id=${orden.id}, pago=${p.id})}" method="post" class="m-0"
+                          sec:authorize="hasRole('ADMIN')" data-confirm="¿Anular este abono?">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Anular</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(pagos)}"><td colspan="6" class="text-center text-muted py-3">Todavía no hay abonos.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <form th:if="${orden.estado.name() != 'CANCELADA' and saldo.signum() > 0}"
+          th:action="@{/ordenes/{id}/pagos(id=${orden.id})}" method="post" class="card card-body mb-4">
+        <h3 class="h6">Registrar abono</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <input type="number" name="monto" min="1" step="0.01" th:max="${saldo}" class="form-control ancho-clave w-auto"
+                   placeholder="Valor" required aria-label="Valor del abono">
+            <select name="metodo" class="form-select w-auto" required aria-label="Medio de pago">
+                <option th:each="m : ${metodos}" th:value="${m}" th:text="${m.etiqueta}"></option>
+            </select>
+            <input type="text" name="nota" maxlength="200" class="form-control w-auto ancho-clave"
+                   placeholder="Nota (opcional)" aria-label="Nota">
+            <button type="submit" class="btn btn-outline-primary">Registrar</button>
+        </div>
+    </form>
+
+    <h2 class="h5">Fotos</h2>
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3" th:each="f : ${fotos}">
+            <div class="card h-100">
+                <a th:href="@{/ordenes/{id}/fotos/{foto}(id=${orden.id}, foto=${f.id})}" target="_blank" rel="noopener">
+                    <img class="card-img-top foto-mini" th:src="@{/ordenes/{id}/fotos/{foto}(id=${orden.id}, foto=${f.id})}"
+                         th:alt="'Foto ' + ${f.id} + ' de la orden ' + ${orden.id}">
+                </a>
+                <div class="card-body p-2 small">
+                    <div th:text="${#temporals.format(f.creadaEn, 'dd/MM/yyyy HH:mm')}"></div>
+                    <form th:action="@{/ordenes/{id}/fotos/{foto}/eliminar(id=${orden.id}, foto=${f.id})}" method="post" class="m-0 mt-1"
+                          sec:authorize="hasRole('ADMIN')" data-confirm="¿Eliminar esta foto?">
+                        <button type="submit" class="btn btn-sm btn-outline-danger py-0">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 text-muted" th:if="${#lists.isEmpty(fotos)}">Sin fotos todavía.</div>
+    </div>
+    <form th:action="@{/ordenes/{id}/fotos(id=${orden.id})}" method="post" enctype="multipart/form-data"
+          class="card card-body mb-4 no-print">
+        <h3 class="h6">Agregar foto</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <input type="file" name="foto" accept="image/jpeg,image/png,image/webp" class="form-control w-auto"
+                   required aria-label="Foto">
+            <button type="submit" class="btn btn-outline-primary">Subir</button>
+        </div>
+        <div class="form-text">JPG, PNG o WEBP, hasta 5 MB y 10 fotos por orden.</div>
+    </form>
+
+    <div class="card card-body no-print" th:if="${orden.estado.name() == 'EN_PROCESO' or orden.estado.name() == 'FINALIZADA'}">
+        <h2 class="h6">Próximo servicio</h2>
+        <p class="small text-muted mb-2" th:if="${orden.proximaFecha != null}"
+           th:text="'Programado para el ' + ${#temporals.format(orden.proximaFecha, 'dd/MM/yyyy')} + (${orden.proximoKm != null} ? ' o a los ' + ${orden.proximoKm} + ' km' : '')"></p>
+        <form th:action="@{/ordenes/{id}/recordatorio(id=${orden.id})}" method="post" class="d-flex flex-wrap gap-2">
+            <input type="date" name="proximaFecha" class="form-control w-auto" required aria-label="Fecha del próximo servicio"
+                   th:value="${orden.proximaFecha}">
+            <input type="number" name="proximoKm" min="0" class="form-control w-auto" placeholder="Km (opcional)"
+                   aria-label="Kilometraje del próximo servicio" th:value="${orden.proximoKm}">
+            <button type="submit" class="btn btn-outline-primary">Guardar</button>
+        </form>
+        <div class="form-text">Aparecerá en Recordatorios unos 30 días antes de esa fecha.</div>
+    </div>
+</section>
+</body>
+</html>

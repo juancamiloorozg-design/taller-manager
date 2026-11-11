@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Ingresar', ~{::section})}">
+<body>
+<section class="ingreso mt-4">
+    <h1 class="mb-1">Ingresar</h1>
+    <p class="text-muted">Acceso para el personal del taller.</p>
+
+    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+        Correo o contraseña incorrectos, o la cuenta está bloqueada o desactivada.
+        Después de 5 intentos fallidos la cuenta se bloquea durante 15 minutos.
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success" role="alert">
+        Cerraste sesión.
+    </div>
+
+    <form th:action="@{/login}" method="post" class="card card-body">
+        <div class="mb-3">
+            <label for="username" class="form-label">Correo</label>
+            <input id="username" name="username" type="email" class="form-control"
+                   autocomplete="username" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input id="password" name="password" type="password" class="form-control"
+                   autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+    </form>
+
+    <div class="card card-body mt-3 demo-claves" th:if="${demo != null}">
+        <h2 class="h6 mb-2">Cuentas de prueba</h2>
+        <dl class="mb-0 small">
+            <dt>Administrador</dt>
+            <dd class="mb-2"><code th:text="${demo.adminEmail}"></code> con <code th:text="${demo.adminClave}"></code></dd>
+            <dt>Mecánico</dt>
+            <dd class="mb-0"><code th:text="${demo.mecanicoEmail}"></code> con <code th:text="${demo.mecanicoClave}"></code></dd>
+        </dl>
+    </div>
+
+    <p class="small text-muted mt-3">
+        Al ingresar aceptas los <a th:href="@{/legal/terminos}">términos de uso</a>.
+        Así tratamos los datos personales: <a th:href="@{/legal/privacidad}">política de tratamiento de datos</a>.
+    </p>
+</section>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Términos de uso', ~{::section})}">
+<body>
+<section class="texto-legal">
+    <h1 class="h3">Términos de uso del sistema</h1>
+    <p class="text-muted">Este sistema es de uso interno de <span th:text="${empresa.nombre}">el taller</span>. No está abierto al público.</p>
+
+    <h2>1. Quién puede entrar</h2>
+    <p>Solo las personas a las que el administrador les creó una cuenta. Cada cuenta es personal: no compartas tu contraseña ni
+        entres con la de otra persona. Lo que se haga con tu cuenta queda registrado a tu nombre.</p>
+
+    <h2>2. Uso permitido</h2>
+    <ul>
+        <li>Usa el sistema solo para el trabajo del taller.</li>
+        <li>No copies datos de clientes fuera del sistema sin una razón del servicio.</li>
+        <li>No intentes entrar a partes para las que tu rol no tiene permiso ni probar la seguridad del sistema.</li>
+    </ul>
+
+    <h2>3. Datos de clientes</h2>
+    <p>Los datos de los clientes se tratan según la <a th:href="@{/legal/privacidad}">política de tratamiento de datos</a>.
+        Antes de registrar a un cliente debes informarle esa política y obtener su autorización.</p>
+
+    <h2>4. Órdenes de servicio</h2>
+    <p>Una orden de servicio es un documento interno del taller y no es una factura. La facturación electrónica se hace por separado,
+        según las reglas de la DIAN.</p>
+
+    <h2>5. Disponibilidad</h2>
+    <p>Hacemos lo posible por mantener el sistema en funcionamiento, pero puede haber interrupciones por mantenimiento o fallos.
+        Si algo no funciona, avisa al administrador.</p>
+
+    <h2>6. Cambios</h2>
+    <p>Estos términos pueden cambiar. La versión vigente es la publicada en esta página.</p>
+</section>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Editar orden', ~{::section})}">
+<body>
+<section class="caja-form">
+    <h1 class="h3 mb-1" th:text="'Editar orden #' + ${orden.id}">Editar orden</h1>
+    <p class="text-muted" th:text="${orden.vehiculo.placa + ' ' + orden.vehiculo.marca + ' ' + orden.vehiculo.modelo}"></p>
+
+    <form th:action="@{/ordenes/{id}(id=${orden.id})}" th:object="${ordenForm}" method="post" class="card card-body" novalidate>
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Trabajo a realizar</label>
+            <textarea id="descripcion" rows="3" class="form-control" th:field="*{descripcion}" maxlength="500"
+                      th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid'"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+        </div>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <label for="kilometraje" class="form-label">Kilometraje</label>
+                <input id="kilometraje" type="number" min="0" class="form-control" th:field="*{kilometraje}"
+                       th:classappend="${#fields.hasErrors('kilometraje')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('kilometraje')}" th:errors="*{kilometraje}"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="manoObra" class="form-label">Mano de obra (COP)</label>
+                <input id="manoObra" type="number" step="0.01" min="0" class="form-control" th:field="*{manoObra}"
+                       th:classappend="${#fields.hasErrors('manoObra')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('manoObra')}" th:errors="*{manoObra}"></div>
+            </div>
+        </div>
+        <th:block th:replace="~{fragments/recepcion :: campos}"></th:block>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a class="btn btn-outline-secondary" th:href="@{/ordenes/{id}(id=${orden.id})}">Cancelar</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

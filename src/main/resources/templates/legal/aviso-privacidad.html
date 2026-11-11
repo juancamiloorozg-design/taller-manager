@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Aviso de privacidad', ~{::section})}">
+<body>
+<section class="texto-legal">
+    <h1 class="h3">Aviso de privacidad</h1>
+
+    <p><strong th:text="${empresa.nombre}">El taller</strong> (NIT <span th:text="${empresa.nit}">000</span>), ubicado en
+        <span th:text="${empresa.direccion + ', ' + empresa.ciudad}">dirección</span>, es el responsable del tratamiento de tus datos personales.</p>
+
+    <p>Usamos tu nombre, documento, teléfono, correo, dirección y los datos de tu vehículo para abrir y gestionar tus órdenes de servicio,
+        avisarte cuando el trabajo esté listo, recordarte tu próximo mantenimiento, dejar constancia del estado en que llega tu vehículo (con fotos), atender garantías y cumplir obligaciones legales. No los usamos para publicidad ni los vendemos.</p>
+
+    <p>Tienes derecho a conocer, actualizar y rectificar tus datos, pedir prueba de tu autorización, revocarla, pedir que los eliminemos
+        y presentar quejas ante la Superintendencia de Industria y Comercio. Los datos que te pedimos no son sensibles. Si prefieres
+        no darnos alguno, dínoslo; solo necesitamos los indispensables para prestarte el servicio.</p>
+
+    <p>Para ejercer tus derechos escribe a <span th:text="${empresa.email}">correo</span> o llama al
+        <span th:text="${empresa.telefono}">teléfono</span>.</p>
+
+    <p>La política completa, con los plazos de respuesta y las medidas de seguridad, está en
+        <a th:href="@{/legal/privacidad}">la política de tratamiento de datos</a>, que también puedes pedir impresa en el taller.</p>
+</section>
+</body>
+</html>

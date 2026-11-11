@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Política de tratamiento de datos', ~{::section})}">
+<body>
+<section class="texto-legal">
+    <h1 class="h3">Política de tratamiento de datos personales</h1>
+    <p class="text-muted" th:text="'Versión ' + ${empresa.politicaVersion} + ', vigente desde el ' + ${empresa.politicaFecha}">Versión</p>
+
+    <p>Este documento explica cómo <strong th:text="${empresa.nombre}">el taller</strong> recoge, usa y protege los datos
+        personales de sus clientes y de las personas que usan este sistema. Se expide en cumplimiento de la Ley 1581 de 2012,
+        el Decreto 1377 de 2013 (recogido en el Decreto 1074 de 2015) y las demás normas que los desarrollan en Colombia.</p>
+
+    <h2>1. Quién es el responsable</h2>
+    <ul>
+        <li>Razón social: <span th:text="${empresa.nombre}">Taller</span></li>
+        <li>NIT: <span th:text="${empresa.nit}">000.000.000-0</span></li>
+        <li>Dirección: <span th:text="${empresa.direccion + ', ' + empresa.ciudad}">Dirección</span></li>
+        <li>Correo para asuntos de datos personales: <span th:text="${empresa.email}">correo</span></li>
+        <li>Teléfono: <span th:text="${empresa.telefono}">teléfono</span></li>
+    </ul>
+
+    <h2>2. Qué datos recogemos</h2>
+    <p>De los clientes: tipo y número de documento, nombre, teléfono, correo, dirección y los datos de sus vehículos
+        (placa, marca, modelo, año y color), el estado en que llega el vehículo y fotos que se toman al recibirlo. También guardamos la fecha, la versión de esta política y la persona del taller
+        que registró la autorización.</p>
+    <p>De los trabajadores que usan el sistema: nombre, correo, rol, fecha del último acceso y un registro de las acciones
+        que realizan.</p>
+    <p>No pedimos datos sensibles (salud, origen racial, orientación política o sexual, datos biométricos) ni datos de niños,
+        niñas o adolescentes. Si por error se registran, se eliminan.</p>
+
+    <h2>3. Para qué los usamos</h2>
+    <ul>
+        <li>Abrir y gestionar las órdenes de servicio de los vehículos.</li>
+        <li>Contactar al cliente por teléfono, WhatsApp o correo cuando el vehículo esté listo, cuando haya que aprobar una cotización o un cambio en el trabajo, o por una garantía.</li>
+        <li>Recordarle al cliente cuándo le toca el próximo mantenimiento de su vehículo.</li>
+        <li>Llevar el registro de abonos y saldos de cada orden.</li>
+        <li>Dejar constancia del estado del vehículo al recibirlo, para atender reclamos.</li>
+        <li>Llevar el historial de mantenimiento del vehículo.</li>
+        <li>Cumplir obligaciones legales, contables y de atención de reclamos.</li>
+        <li>Mantener la seguridad del sistema y un registro de quién hizo qué.</li>
+    </ul>
+    <p>No vendemos ni cedemos los datos a terceros con fines comerciales. No enviamos publicidad con estos datos.</p>
+
+    <h2>4. Autorización</h2>
+    <p>Antes de registrar a un cliente, el taller le informa lo que dice esta política y pide su autorización. El sistema no
+        permite crear el cliente sin esa confirmación y deja constancia de la fecha y de quién la registró. El titular puede
+        revocar la autorización en cualquier momento, salvo cuando exista un deber legal o contractual de conservar la información.</p>
+
+    <h2>5. Derechos del titular</h2>
+    <p>Quien nos entregó sus datos puede:</p>
+    <ul>
+        <li>Conocer, actualizar y rectificar sus datos.</li>
+        <li>Pedir prueba de la autorización que dio.</li>
+        <li>Saber el uso que se les ha dado.</li>
+        <li>Presentar quejas ante la Superintendencia de Industria y Comercio por infracciones a la ley.</li>
+        <li>Revocar la autorización y pedir la supresión de los datos cuando no se respeten los principios y garantías legales.</li>
+        <li>Acceder de forma gratuita a sus datos.</li>
+    </ul>
+
+    <h2>6. Cómo ejercer los derechos</h2>
+    <p>Escribe a <span th:text="${empresa.email}">correo</span> o ve al taller en <span th:text="${empresa.direccion}">dirección</span>
+        indicando tu nombre, documento y lo que necesitas. Si actúas en nombre de otra persona, adjunta el poder o la prueba de tu representación.</p>
+    <ul>
+        <li>Consultas: respondemos en un máximo de diez (10) días hábiles. Si no alcanzamos, te avisamos el motivo y la nueva fecha, que no pasará de cinco (5) días hábiles más.</li>
+        <li>Reclamos (corrección, supresión o revocatoria): si la solicitud está completa, la resolvemos en un máximo de quince (15) días hábiles. Si faltan datos, te los pedimos dentro de los cinco (5) días siguientes. Si no alcanzamos, te avisamos y la ampliación no pasará de ocho (8) días hábiles más.</li>
+    </ul>
+    <p>Cuando se atiende una supresión, los datos personales del cliente se borran y se conserva el historial de órdenes sin identificarlo.</p>
+
+    <h2>7. Seguridad</h2>
+    <p>Las contraseñas se guardan cifradas, el acceso al sistema exige usuario y clave, hay roles con permisos distintos, la cuenta se
+        bloquea después de varios intentos fallidos y las acciones importantes quedan en un registro de auditoría. Aun así,
+        ningún sistema es infalible. Si ocurre un incidente que afecte tus datos, lo informaremos a las autoridades y a los afectados como exige la ley.</p>
+
+    <h2>8. Conservación</h2>
+    <p>Guardamos los datos mientras exista la relación con el cliente y el tiempo adicional que exijan las normas contables,
+        tributarias o de garantía. Después se eliminan o se anonimizan.</p>
+
+    <h2>9. Cambios</h2>
+    <p>Si esta política cambia de manera sustancial, avisaremos a los titulares y pediremos una nueva autorización cuando la ley lo requiera.
+        La versión vigente siempre está publicada en esta página.</p>
+
+    <p class="small text-muted mt-4">Ver también el <a th:href="@{/legal/aviso-privacidad}">aviso de privacidad</a> y la
+        <a th:href="@{/legal/cookies}">política de cookies</a>.</p>
+</section>
+</body>
+</html>

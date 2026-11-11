@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${edicion} ? 'Editar repuesto' : 'Nuevo repuesto', ~{::section})}">
+<body>
+<section class="caja-form">
+    <h1 class="h3 mb-3" th:text="${edicion} ? 'Editar repuesto' : 'Nuevo repuesto'">Nuevo repuesto</h1>
+
+    <form th:action="${edicion} ? @{/repuestos/{id}(id=${repuestoId})} : @{/repuestos}" th:object="${repuestoForm}"
+          method="post" class="card card-body" novalidate>
+        <div class="row g-3">
+            <div class="col-sm-4">
+                <label for="codigo" class="form-label">Código</label>
+                <input id="codigo" type="text" class="form-control" th:field="*{codigo}" maxlength="40"
+                       th:classappend="${#fields.hasErrors('codigo')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('codigo')}" th:errors="*{codigo}"></div>
+            </div>
+            <div class="col-sm-8">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input id="nombre" type="text" class="form-control" th:field="*{nombre}" maxlength="100"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+            <div class="col-sm-4">
+                <label for="precio" class="form-label">Precio (COP)</label>
+                <input id="precio" type="number" step="0.01" min="0" class="form-control" th:field="*{precio}"
+                       th:classappend="${#fields.hasErrors('precio')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+            </div>
+            <div class="col-sm-4" th:unless="${edicion}">
+                <label for="stock" class="form-label">Stock inicial</label>
+                <input id="stock" type="number" min="0" class="form-control" th:field="*{stock}"
+                       th:classappend="${#fields.hasErrors('stock')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+            </div>
+            <div class="col-sm-4">
+                <label for="stockMinimo" class="form-label">Avisar cuando queden</label>
+                <input id="stockMinimo" type="number" min="0" class="form-control" th:field="*{stockMinimo}"
+                       th:classappend="${#fields.hasErrors('stockMinimo')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('stockMinimo')}" th:errors="*{stockMinimo}"></div>
+            </div>
+        </div>
+        <p class="form-text mt-3 mb-0" th:if="${edicion}">El stock solo se cambia con "Ajustar" en la lista (rol administrador), para que quede en la auditoría.</p>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary" th:text="${edicion} ? 'Guardar cambios' : 'Registrar repuesto'">Guardar</button>
+            <a class="btn btn-outline-secondary" th:href="@{/repuestos}">Cancelar</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

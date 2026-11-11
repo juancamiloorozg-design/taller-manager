@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Cookies', ~{::section})}">
+<body>
+<section class="texto-legal">
+    <h1 class="h3">Política de cookies</h1>
+
+    <p>Este sistema usa solo las cookies necesarias para funcionar. No usamos cookies de publicidad, de análisis ni de terceros, y por eso
+        no mostramos un aviso para aceptarlas o rechazarlas.</p>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table mb-0">
+            <thead><tr><th>Cookie</th><th>Para qué sirve</th><th>Duración</th></tr></thead>
+            <tbody>
+            <tr><td>JSESSIONID</td><td>Mantiene tu sesión iniciada mientras trabajas.</td><td>Hasta cerrar sesión o el navegador, o que la sesión caduque por inactividad.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="mt-3">Además, cada formulario lleva un código oculto que protege contra envíos falsos hechos desde otros sitios. Ese código no
+        es una cookie de seguimiento y no se comparte con nadie.</p>
+
+    <p>Las letras, estilos y scripts se sirven desde este mismo sitio, sin pedir nada a servidores externos.</p>
+
+    <p>Puedes borrar la cookie desde tu navegador, pero entonces tendrás que iniciar sesión otra vez.</p>
+</section>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Recordatorios', ~{::section})}">
+<body>
+<section>
+    <h1 class="h3 mb-1">Vehículos por contactar</h1>
+    <p class="text-muted">Clientes a los que les toca su próximo servicio en los siguientes 30 días, o ya se pasó la fecha.
+        El botón de WhatsApp abre el mensaje ya escrito y lo envías tú.</p>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Fecha</th><th>Vehículo</th><th>Cliente</th><th>Teléfono</th><th>Último trabajo</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="o : ${ordenes}">
+                <td>
+                    <span th:text="${#temporals.format(o.proximaFecha, 'dd/MM/yyyy')}"></span>
+                    <div class="small text-muted" th:if="${o.proximoKm != null}" th:text="${o.proximoKm} + ' km'"></div>
+                </td>
+                <td><span class="placa" th:text="${o.vehiculo.placa}"></span> <span th:text="${o.vehiculo.marca}"></span></td>
+                <td th:text="${o.vehiculo.cliente.nombre}"></td>
+                <td th:text="${o.vehiculo.cliente.telefono != null} ? ${o.vehiculo.cliente.telefono} : '-'"></td>
+                <td><a th:href="@{/ordenes/{id}(id=${o.id})}" th:text="'#' + ${o.id} + ' ' + ${#strings.abbreviate(o.descripcion, 40)}"></a></td>
+                <td class="text-end">
+                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                        <a class="btn btn-sm btn-success" th:if="${@msg.recordatorio(o) != null}"
+                           th:href="${@msg.recordatorio(o)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <form th:action="@{/recordatorios/{id}/atendido(id=${o.id})}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Ya avisé</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(ordenes)}"><td colspan="6" class="text-center text-muted py-4">No hay vehículos por contactar.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

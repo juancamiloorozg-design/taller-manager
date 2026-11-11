@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Vehículos', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Vehículos</h1>
+        <a class="btn btn-primary" th:href="@{/vehiculos/nuevo}">Nuevo vehículo</a>
+    </div>
+
+    <form th:action="@{/vehiculos}" method="get" class="d-flex gap-2 mb-3">
+        <input type="search" name="q" th:value="${q}" class="form-control"
+               placeholder="Buscar por placa, marca, modelo o propietario" aria-label="Buscar vehículos" maxlength="60">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+    </form>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Placa</th><th>Vehículo</th><th>Año</th><th>Propietario</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="v : ${pagina.content}">
+                <td><span class="placa" th:text="${v.placa}"></span></td>
+                <td th:text="${v.marca + ' ' + v.modelo}"></td>
+                <td th:text="${v.anio}"></td>
+                <td th:text="${v.cliente.nombre}"></td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-secondary" th:href="@{/vehiculos/{id}(id=${v.id})}">Ver</a></td>
+            </tr>
+            <tr th:if="${pagina.empty}"><td colspan="5" class="text-center text-muted py-4">No hay vehículos con ese criterio.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:replace="~{fragments/paginacion :: paginacion(${pagina}, ${urlBase}, ${q}, '')}"></th:block>
+</section>
+</body>
+</html>

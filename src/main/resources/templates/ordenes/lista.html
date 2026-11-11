@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Órdenes', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Órdenes de servicio</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" th:href="@{/ordenes/nueva(cotizacion=true)}">Nueva cotización</a>
+            <a class="btn btn-primary" th:href="@{/ordenes/nueva}">Nueva orden</a>
+        </div>
+    </div>
+
+    <form th:action="@{/ordenes}" method="get" class="d-flex gap-2 mb-3">
+        <select name="estado" class="form-select ancho-clave w-auto" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            <option th:each="e : ${estados}" th:value="${e}" th:text="${e.etiqueta}"
+                    th:selected="${e == estado}"></option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+    </form>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Orden</th><th>Fecha</th><th>Vehículo</th><th>Cliente</th><th>Estado</th><th class="text-end">Total</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="o : ${pagina.content}">
+                <td th:text="'#' + ${o.id}"></td>
+                <td th:text="${#temporals.format(o.creadoEn, 'dd/MM/yyyy')}"></td>
+                <td><span class="placa" th:text="${o.vehiculo.placa}"></span> <span th:text="${o.vehiculo.marca}"></span></td>
+                <td th:text="${o.vehiculo.cliente.nombre}"></td>
+                <td><span class="badge" th:classappend="'text-bg-' + ${o.estado.color}" th:text="${o.estado.etiqueta}"></span></td>
+                <td class="text-end" th:text="${@fmt.cop(o.total)}"></td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-secondary" th:href="@{/ordenes/{id}(id=${o.id})}">Abrir</a></td>
+            </tr>
+            <tr th:if="${pagina.empty}"><td colspan="7" class="text-center text-muted py-4">No hay órdenes para mostrar.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:replace="~{fragments/paginacion :: paginacion(${pagina}, ${urlBase}, '', ${estado != null ? estado.name() : ''})}"></th:block>
+</section>
+</body>
+</html>

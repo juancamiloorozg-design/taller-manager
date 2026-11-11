@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Algo salió mal', ~{::section})}">
+<body>
+<section class="caja-estrecha mx-auto text-center py-5">
+    <h1 class="h3">Algo salió mal</h1>
+    <p class="text-muted">Ocurrió un error y quedó registrado. Intenta de nuevo; si sigue pasando, avisa al administrador.</p>
+    <a class="btn btn-primary mt-3" th:href="@{/}">Volver al inicio</a>
+</section>
+</body>
+</html>

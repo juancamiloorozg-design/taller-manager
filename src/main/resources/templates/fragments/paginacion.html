@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="paginacion(pagina, urlBase, q, estado)" th:if="${pagina.totalPages > 1}"
+     class="no-print" aria-label="Paginación">
+    <ul class="pagination justify-content-center mt-3">
+        <li class="page-item" th:classappend="${pagina.first} ? 'disabled'">
+            <a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number - 1}, q=${q}, estado=${estado})}">Anterior</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link" th:text="'Página ' + ${pagina.number + 1} + ' de ' + ${pagina.totalPages}">Página 1 de 3</span>
+        </li>
+        <li class="page-item" th:classappend="${pagina.last} ? 'disabled'">
+            <a class="page-link" th:href="@{${urlBase}(pagina=${pagina.number + 1}, q=${q}, estado=${estado})}">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>
