@@ -56,6 +56,8 @@ docker build -t taller-manager .
 docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=demo taller-manager
 ```
 
+Para publicarla en internet, el repositorio trae un `render.yaml` pensado para Render: en su panel eliges New, Blueprint, seleccionas este repositorio y confirmas. Con el plan gratuito la primera visita tarda unos segundos porque el servicio se duerme cuando no lo usa nadie. Es una configuración que todavía no he probado en producción.
+
 También existe el perfil `dev`, igual pero sin reinicio automático y con pocos datos (`-Dspring-boot.run.profiles=dev`).
 
 ## Correrlo con MySQL
