@@ -1,0 +1,13 @@
+# Despliegue de la demostracion publica en Render (plan gratuito).
+# En Render: New > Blueprint, elige este repositorio y confirma.
+services:
+  - type: web
+    name: taller-manager-demo
+    runtime: docker
+    plan: free
+    healthCheckPath: /login
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: demo
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx320m -XX:+UseSerialGC
