@@ -17,6 +17,8 @@ En el celular el menú lateral se pliega y el tablero pasa a una sola columna:
 
 ## Demo web en Next.js
 
+[Probar Taller Manager en Vercel](https://web-rosy-xi-77.vercel.app/)
+
 La carpeta `web/` contiene una edición de portafolio para desplegar en Vercel. Incluye agenda, órdenes y cotizaciones, clientes, vehículos, repuestos, abonos, fotos de recepción, recordatorios, informes CSV y exportación JSON. Cada navegador conserva su propia copia con datos ficticios. El acceso con usuarios y roles, la base de datos compartida y los respaldos programados pertenecen a la versión Java descrita abajo.
 
 Para ejecutar la edición de Next.js con Node.js 22 o superior:
