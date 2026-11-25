@@ -4,16 +4,21 @@ Aplicación web para llevar un taller mecánico: clientes, vehículos, repuestos
 
 Lo hice como proyecto de portafolio. Los datos que verás en las capturas son inventados.
 
-![Panel del taller](docs/capturas/panel.png)
+### Capturas de la demo en Vercel
 
-| | |
+![Panel del taller](docs/capturas/vercel/panel.jpg)
+
+| Agenda semanal | Órdenes de servicio |
 |---|---|
-| ![Detalle de una orden](docs/capturas/orden-detalle.png) | ![Informes](docs/capturas/informes.png) |
-| ![Lista de órdenes](docs/capturas/ordenes.png) | ![Recordatorios](docs/capturas/recordatorios.png) |
+| ![Agenda semanal](docs/capturas/vercel/agenda.jpg) | ![Lista de órdenes](docs/capturas/vercel/ordenes.jpg) |
 
-En el celular el menú lateral se pliega y el tablero pasa a una sola columna:
+| Detalle de una orden | Informes |
+|---|---|
+| ![Detalle de una orden](docs/capturas/vercel/orden-detalle.jpg) | ![Informes del taller](docs/capturas/vercel/informes.jpg) |
 
-![Panel en el celular](docs/capturas/panel-movil.png)
+| Recordatorios | Panel en el celular |
+|---|---|
+| ![Recordatorios de mantenimiento](docs/capturas/vercel/recordatorios.jpg) | <img src="docs/capturas/vercel/panel-movil.jpg" alt="Panel de Taller Manager en el celular" width="270"> |
 
 ## Demo web en Next.js
 
