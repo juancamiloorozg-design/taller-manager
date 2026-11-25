@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Agenda', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <h1 class="h3 mb-0">Agenda de citas</h1>
+        <a th:href="@{/citas/nueva}" class="btn btn-primary">Agendar cita</a>
+    </div>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h2 class="h5 mb-0" th:text="|${#temporals.format(inicio, 'dd/MM/yyyy')} al ${#temporals.format(fin, 'dd/MM/yyyy')}|"></h2>
+        <nav class="d-flex gap-2" aria-label="Cambiar semana">
+            <a class="btn btn-sm btn-outline-secondary" th:href="@{/citas(fecha=${anterior.toString()})}">Anterior</a>
+            <a class="btn btn-sm btn-outline-secondary" th:href="@{/citas}">Esta semana</a>
+            <a class="btn btn-sm btn-outline-secondary" th:href="@{/citas(fecha=${siguiente.toString()})}">Siguiente</a>
+        </nav>
+    </div>
+    <div th:if="${#lists.isEmpty(citas)}" class="card card-body text-muted">No hay citas para esta semana.</div>
+    <div class="d-grid gap-2">
+        <article th:each="c : ${citas}" class="card card-body d-flex flex-md-row flex-wrap align-items-md-center justify-content-between gap-3">
+            <div>
+                <time class="text-muted small" th:datetime="${c.fechaHora}"
+                      th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy · HH:mm')}"></time>
+                <h3 class="h6 mb-1" th:text="${c.motivo}"></h3>
+                <p class="mb-0" th:text="|${c.vehiculo.placa} · ${c.vehiculo.marca} ${c.vehiculo.modelo} · ${c.vehiculo.cliente.nombre}|"></p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge text-bg-secondary" th:if="${c.cancelada}">Cancelada</span>
+                <a th:if="${c.orden != null}" class="btn btn-sm btn-outline-primary"
+                   th:href="@{/ordenes/{id}(id=${c.orden.id})}" th:text="|Ver orden #${c.orden.id}|"></a>
+                <th:block th:if="${!c.cancelada and c.orden == null}">
+                    <span class="badge text-bg-info">Agendada</span>
+                    <a class="btn btn-sm btn-primary" th:href="@{/ordenes/nueva(citaId=${c.id})}">Abrir orden</a>
+                    <form th:action="@{/citas/{id}/cancelar(id=${c.id})}" method="post">
+                        <button class="btn btn-sm btn-outline-secondary" type="submit">Cancelar cita</button>
+                    </form>
+                </th:block>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

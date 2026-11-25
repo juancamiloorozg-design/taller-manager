@@ -42,7 +42,7 @@ public class RespaldoService {
     private static final DateTimeFormatter SELLO = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final List<String> TABLAS = List.of(
             "usuarios", "clientes", "vehiculos", "repuestos", "ordenes_servicio",
-            "orden_repuestos", "pagos", "orden_fotos", "auditoria");
+            "orden_repuestos", "pagos", "orden_fotos", "citas", "auditoria");
 
     private final JdbcTemplate jdbc;
     private final AuditoriaService auditoria;

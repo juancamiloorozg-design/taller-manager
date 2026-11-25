@@ -6,8 +6,14 @@
     <h1 class="h3 mb-3" th:text="${ordenForm.cotizacion} ? 'Nueva cotización' : 'Nueva orden de servicio'">Nueva orden de servicio</h1>
 
     <form th:action="@{/ordenes}" th:object="${ordenForm}" method="post" class="card card-body" novalidate>
+        <input th:if="${cita != null}" type="hidden" th:field="*{citaId}">
         <div class="row g-3">
-            <div class="col-12">
+            <div class="col-12" th:if="${cita != null}">
+                <span class="form-label d-block">Vehículo de la cita</span>
+                <strong th:text="${cita.vehiculo.placa + ' · ' + cita.vehiculo.marca + ' ' + cita.vehiculo.modelo}"></strong>
+                <div class="form-text" th:text="${cita.vehiculo.cliente.nombre}"></div>
+            </div>
+            <div class="col-12" th:if="${cita == null}">
                 <label for="vehiculoId" class="form-label">Vehículo</label>
                 <select id="vehiculoId" class="form-select" th:field="*{vehiculoId}"
                         th:classappend="${#fields.hasErrors('vehiculoId')} ? 'is-invalid'">
@@ -72,7 +78,7 @@
 
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary">Guardar</button>
-            <a class="btn btn-outline-secondary" th:href="@{/ordenes}">Cancelar</a>
+            <a class="btn btn-outline-secondary" th:href="${cita != null} ? @{/citas} : @{/ordenes}">Cancelar</a>
         </div>
     </form>
 </section>

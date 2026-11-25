@@ -18,6 +18,7 @@ public class OrdenForm {
 
     /** Solo se usa al crear. Al editar el vehiculo no cambia. */
     private Long vehiculoId;
+    private Long citaId;
 
     @NotBlank(message = "Describe el trabajo a realizar.")
     @Size(max = 500, message = "La descripción no puede superar 500 caracteres.")
@@ -47,6 +48,9 @@ public class OrdenForm {
 
     /** repuestoId -> cantidad. Se envia como cantidades[5]=2. */
     private Map<Long, Integer> cantidades = new LinkedHashMap<>();
+
+    public Long getCitaId() { return citaId; }
+    public void setCitaId(Long citaId) { this.citaId = citaId; }
 
     public Long getVehiculoId() { return vehiculoId; }
     public void setVehiculoId(Long vehiculoId) { this.vehiculoId = vehiculoId; }

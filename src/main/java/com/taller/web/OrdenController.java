@@ -1,10 +1,12 @@
 package com.taller.web;
 
 import com.taller.exception.TallerException;
+import com.taller.model.Cita;
 import com.taller.model.EstadoOrden;
 import com.taller.model.MetodoPago;
 import com.taller.model.NivelCombustible;
 import com.taller.model.OrdenServicio;
+import com.taller.service.CitaService;
 import com.taller.service.FotoService;
 import com.taller.service.OrdenServicioService;
 import com.taller.service.PagoService;
@@ -41,16 +43,18 @@ public class OrdenController {
     private final UsuarioService usuarioService;
     private final PagoService pagoService;
     private final FotoService fotoService;
+    private final CitaService citaService;
 
     public OrdenController(OrdenServicioService ordenService, VehiculoService vehiculoService,
                            RepuestoService repuestoService, UsuarioService usuarioService,
-                           PagoService pagoService, FotoService fotoService) {
+                           PagoService pagoService, FotoService fotoService, CitaService citaService) {
         this.ordenService = ordenService;
         this.vehiculoService = vehiculoService;
         this.repuestoService = repuestoService;
         this.usuarioService = usuarioService;
         this.pagoService = pagoService;
         this.fotoService = fotoService;
+        this.citaService = citaService;
     }
 
     @GetMapping
@@ -68,10 +72,24 @@ public class OrdenController {
     @GetMapping("/nueva")
     public String nueva(@RequestParam(required = false) Long vehiculoId,
                         @RequestParam(defaultValue = "false") boolean cotizacion,
+                        @RequestParam(required = false) Long citaId,
                         Model model) {
         OrdenForm form = new OrdenForm();
         form.setVehiculoId(vehiculoId);
         form.setCotizacion(cotizacion);
+        if (citaId != null) {
+            Cita cita = citaService.obtener(citaId);
+            if (cita.getOrden() != null) {
+                return "redirect:/ordenes/" + cita.getOrden().getId();
+            }
+            if (cita.isCancelada()) {
+                return "redirect:/citas";
+            }
+            form.setCitaId(citaId);
+            form.setVehiculoId(cita.getVehiculo().getId());
+            form.setDescripcion(cita.getMotivo());
+            model.addAttribute("cita", cita);
+        }
         model.addAttribute("ordenForm", form);
         cargarListas(model);
         return "ordenes/form";
@@ -83,7 +101,17 @@ public class OrdenController {
                         Authentication autenticacion,
                         Model model,
                         RedirectAttributes redirect) {
-        if (form.getVehiculoId() == null) {
+        if (form.getCitaId() != null) {
+            Cita cita = citaService.obtener(form.getCitaId());
+            if (cita.getOrden() != null) {
+                return "redirect:/ordenes/" + cita.getOrden().getId();
+            }
+            if (cita.isCancelada()) {
+                redirect.addFlashAttribute("mensajeError", "La cita está cancelada.");
+                return "redirect:/citas";
+            }
+            model.addAttribute("cita", cita);
+        } else if (form.getVehiculoId() == null) {
             resultado.rejectValue("vehiculoId", "vehiculo.requerido", "Selecciona un vehículo.");
         }
         if (resultado.hasErrors()) {
@@ -91,10 +119,13 @@ public class OrdenController {
             return "ordenes/form";
         }
         try {
-            OrdenServicio orden = ordenService.crearConRepuestos(form.getVehiculoId(), form.aDatos(),
-                    form.isCotizacion(), form.getCantidades(), autenticacion.getName());
+            Long ordenId = form.getCitaId() == null
+                    ? ordenService.crearConRepuestos(form.getVehiculoId(), form.aDatos(), form.isCotizacion(),
+                            form.getCantidades(), autenticacion.getName()).getId()
+                    : citaService.abrirOrden(form.getCitaId(), form.aDatos(), form.isCotizacion(),
+                            form.getCantidades(), autenticacion.getName());
             redirect.addFlashAttribute("mensajeExito", form.isCotizacion() ? "Cotización creada." : "Orden creada.");
-            return "redirect:/ordenes/" + orden.getId();
+            return "redirect:/ordenes/" + ordenId;
         } catch (TallerException e) {
             model.addAttribute("mensajeError", e.getMessage());
             cargarListas(model);

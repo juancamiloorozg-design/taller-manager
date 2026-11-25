@@ -27,7 +27,7 @@ public class DemoReinicio {
     private static final Logger log = LoggerFactory.getLogger(DemoReinicio.class);
     /** Orden que respeta las llaves foraneas: primero las tablas que dependen de otras. */
     private static final List<String> TABLAS = List.of(
-            "orden_fotos", "pagos", "orden_repuestos", "ordenes_servicio",
+            "citas", "orden_fotos", "pagos", "orden_repuestos", "ordenes_servicio",
             "vehiculos", "clientes", "repuestos", "auditoria", "usuarios");
 
     private final JdbcTemplate jdbc;

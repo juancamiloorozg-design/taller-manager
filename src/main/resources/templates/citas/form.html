@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Agendar cita', ~{::section})}">
+<body>
+<section class="caja-form">
+    <h1 class="h3 mb-3">Agendar cita</h1>
+    <form class="card card-body" th:action="@{/citas}" th:object="${citaForm}" method="post">
+        <div class="mb-3">
+            <label class="form-label" for="vehiculoId">Vehículo y cliente</label>
+            <select class="form-select" th:field="*{vehiculoId}" required>
+                <option value="">Selecciona un vehículo</option>
+                <option th:each="v : ${vehiculos}" th:value="${v.id}"
+                        th:text="|${v.placa} · ${v.marca} ${v.modelo} · ${v.cliente.nombre}|"></option>
+            </select>
+            <p class="text-danger small mb-0" th:errors="*{vehiculoId}"></p>
+            <p class="form-text" th:if="${#lists.isEmpty(vehiculos)}"><a th:href="@{/vehiculos/nuevo}">Registra un vehículo</a> para agendar una cita.</p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="fechaHora">Fecha y hora (Colombia)</label>
+            <input class="form-control" type="datetime-local" th:field="*{fechaHora}" required>
+            <p class="text-danger small mb-0" th:errors="*{fechaHora}"></p>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="motivo">Motivo de la visita</label>
+            <textarea class="form-control" rows="3" maxlength="500" th:field="*{motivo}" required></textarea>
+            <p class="text-danger small mb-0" th:errors="*{motivo}"></p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Guardar cita</button>
+            <a class="btn btn-outline-secondary" th:href="@{/citas}">Volver a agenda</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

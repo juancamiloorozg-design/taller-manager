@@ -15,6 +15,17 @@ En el celular el menú lateral se pliega y el tablero pasa a una sola columna:
 
 ![Panel en el celular](docs/capturas/panel-movil.png)
 
+## Recorrido de ejemplo
+
+```mermaid
+flowchart LR
+    A[Agendar cita] --> B[Recibir vehículo y abrir orden]
+    B --> C[Registrar trabajo, repuestos y abonos]
+    C --> D[Finalizar orden y avisar al cliente]
+```
+
+En el perfil `demo`, abre **Agenda**, busca la cita **Cambio de aceite y revisión de niveles** y selecciona **Abrir orden**. Si la cita quedó en la semana siguiente, avanza con **Siguiente**. El formulario trae el vehículo y el trabajo previsto. Completa la recepción y guarda para ver el número de orden en la agenda.
+
 ## Tecnologías
 
 Java 17, Spring Boot 3.2, Spring Data JPA con Hibernate, Spring Security 6, Thymeleaf, Flyway, MySQL 8 (H2 para la demostración), Bootstrap 5 y JUnit 5. Las tipografías (Archivo y Barlow Condensed) vienen dentro del proyecto con su licencia.
@@ -33,6 +44,7 @@ Java 17, Spring Boot 3.2, Spring Data JPA con Hibernate, Spring Security 6, Thym
 - Versión de la orden para imprimir.
 - Panel con órdenes abiertas, lo finalizado en el mes, cotizaciones sin aprobar, vehículos por contactar y repuestos por agotarse.
 - Usuarios con dos roles: administrador y mecánico. Auditoría de las acciones importantes.
+- Agenda semanal: registra citas para vehículos existentes, cancela citas pendientes y abre una orden desde una cita con el vehículo y el motivo precargados.
 - Búsqueda global en el menú lateral: placa, nombre, documento, teléfono o número de orden.
 - Respaldos (solo administrador, menú Respaldos): cada noche a las 2:00 a. m. se guarda un zip con todas las tablas en CSV y las fotos. Se conservan los últimos 14 (`TALLER_RESPALDOS_CONSERVAR`), en `datos/respaldos` (`TALLER_RESPALDOS_DIR`). Es una copia de los datos, no un volcado de MySQL: para restaurar la base completa conviene además usar `mysqldump`. Las claves de los usuarios no se incluyen.
 - Páginas legales: política de tratamiento de datos, aviso de privacidad, términos de uso y cookies.
@@ -47,7 +59,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=demo
 
 Abre http://localhost:8080. La pantalla de ingreso muestra las cuentas de prueba: `admin@taller.local` con `Admin12345!` y `mecanico@taller.local` con `Mecanico12345!`.
 
-El perfil `demo` usa una base H2 en memoria con 8 clientes, 9 vehículos, 12 repuestos y 16 órdenes en todos los estados, con abonos y próximos servicios. Cada 6 horas borra lo que hayan creado los visitantes y vuelve a cargar los datos de ejemplo (se cambia con `taller.demo.reinicio-horas`). Muestra un aviso amarillo arriba y las claves de prueba en el login. No lo uses con datos reales.
+El perfil `demo` usa una base H2 en memoria con 8 clientes, 9 vehículos, 12 repuestos y 16 órdenes en todos los estados, con abonos, próximos servicios y 2 citas de ejemplo. Cada 6 horas borra lo que hayan creado los visitantes y vuelve a cargar los datos de ejemplo (se cambia con `taller.demo.reinicio-horas`). Muestra un aviso amarillo arriba y las claves de prueba en el login. No lo uses con datos reales.
 
 Con Docker, sin instalar nada más:
 
@@ -156,14 +168,13 @@ src/main/resources
 mvn test
 ```
 
-Son 19 pruebas. Las unitarias cubren el modelo (totales de la orden, aprobación de cotizaciones, stock, anonimización del cliente), los números de WhatsApp y la política de contraseñas. Las de integración levantan la aplicación completa con el perfil `demo` y comprueban que los datos de ejemplo cargan en todos los estados, que el respaldo trae todas las tablas y no incluye las claves, que solo se pueden descargar respaldos con nombre válido y que el reinicio de la demostración deja todo como al principio.
+Son 20 pruebas. Las unitarias cubren el modelo (totales de la orden, aprobación de cotizaciones, stock, anonimización del cliente), los números de WhatsApp y la política de contraseñas. Las de integración levantan la aplicación completa con el perfil `demo` y comprueban que los datos de ejemplo cargan en todos los estados, que el respaldo trae todas las tablas y no incluye las claves, que solo se pueden descargar respaldos con nombre válido que el reinicio de la demostración deja todo como al principio y que un mecánico puede agendar una cita y convertirla en una sola orden.
 
 Todavía faltan pruebas de los controladores y de los permisos por rol.
 
 ## Qué le falta
 
 - Facturación electrónica con la DIAN, que se haría a través de un proveedor autorizado.
-- Agenda de citas.
 - Que el cliente consulte el estado de su orden con un enlace.
 - Compras a proveedores y entrada de repuestos al stock.
 

@@ -6,6 +6,7 @@ import com.taller.model.Cliente;
 import com.taller.model.OrdenServicio;
 import com.taller.model.Vehiculo;
 import com.taller.repository.ClienteRepository;
+import com.taller.repository.CitaRepository;
 import com.taller.repository.OrdenServicioRepository;
 import com.taller.repository.VehiculoRepository;
 import com.taller.util.Tiempo;
@@ -29,13 +30,15 @@ public class VehiculoService {
     private final VehiculoRepository vehiculos;
     private final ClienteRepository clientes;
     private final OrdenServicioRepository ordenes;
+    private final CitaRepository citas;
     private final AuditoriaService auditoria;
 
     public VehiculoService(VehiculoRepository vehiculos, ClienteRepository clientes,
-                           OrdenServicioRepository ordenes, AuditoriaService auditoria) {
+                           OrdenServicioRepository ordenes, AuditoriaService auditoria, CitaRepository citas) {
         this.vehiculos = vehiculos;
         this.clientes = clientes;
         this.ordenes = ordenes;
+        this.citas = citas;
         this.auditoria = auditoria;
     }
 
@@ -99,12 +102,15 @@ public class VehiculoService {
         return vehiculo;
     }
 
-    /** Solo se puede borrar un vehiculo que nunca tuvo ordenes. */
+    /** Solo se puede borrar un vehículo sin órdenes ni citas. */
     @Transactional
     public void eliminar(Long id, String actor) {
         Vehiculo vehiculo = obtener(id);
         if (ordenes.existsByVehiculoId(id)) {
             throw new TallerException("No se puede eliminar un vehículo que tiene órdenes de servicio.");
+        }
+        if (citas.existsByVehiculoId(id)) {
+            throw new TallerException("No se puede eliminar un vehículo que tiene citas registradas.");
         }
         vehiculos.delete(vehiculo);
         auditoria.registrar(actor, "ELIMINAR", "Vehiculo", id, "Placa " + vehiculo.getPlaca());

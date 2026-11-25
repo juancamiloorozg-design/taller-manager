@@ -8,6 +8,7 @@ import com.taller.model.Rol;
 import com.taller.model.Usuario;
 import com.taller.model.Vehiculo;
 import com.taller.repository.ClienteRepository;
+import com.taller.service.CitaService;
 import com.taller.service.ClienteService;
 import com.taller.service.OrdenServicioService;
 import com.taller.service.PagoService;
@@ -47,13 +48,14 @@ public class DemoDataLoader implements CommandLineRunner {
     private final PagoService pagoService;
     private final UsuarioService usuarioService;
     private final JdbcTemplate jdbc;
+    private final CitaService citaService;
     private final String mecanicoEmail;
     private final String mecanicoPassword;
 
     public DemoDataLoader(ClienteRepository clientes, ClienteService clienteService,
                           VehiculoService vehiculoService, RepuestoService repuestoService,
                           OrdenServicioService ordenService, PagoService pagoService,
-                          UsuarioService usuarioService, JdbcTemplate jdbc,
+                          UsuarioService usuarioService, JdbcTemplate jdbc, CitaService citaService,
                           @Value("${taller.demo.mecanico-email:mecanico@taller.local}") String mecanicoEmail,
                           @Value("${taller.demo.mecanico-password:Mecanico12345!}") String mecanicoPassword) {
         this.clientes = clientes;
@@ -64,6 +66,7 @@ public class DemoDataLoader implements CommandLineRunner {
         this.pagoService = pagoService;
         this.usuarioService = usuarioService;
         this.jdbc = jdbc;
+        this.citaService = citaService;
         this.mecanicoEmail = mecanicoEmail;
         this.mecanicoPassword = mecanicoPassword;
     }
@@ -181,6 +184,11 @@ public class DemoDataLoader implements CommandLineRunner {
         ordenService.programarRecordatorio(o4.getId(), Tiempo.ahora().toLocalDate().plusDays(1), 69000, ACTOR);
         jdbc.update("UPDATE ordenes_servicio SET proxima_fecha = ? WHERE id IN (?, ?)",
                 Tiempo.ahora().toLocalDate().minusDays(4), o2.getId(), o4.getId());
+
+        LocalDateTime proximaCita = Tiempo.ahora().plusHours(1).withMinute(0).withSecond(0).withNano(0);
+        citaService.agendar(veh.get("mazda"), proximaCita, "Cambio de aceite y revisión de niveles", ACTOR);
+        citaService.agendar(veh.get("spark"), proximaCita.toLocalDate().plusDays(1).atTime(10, 30),
+                "Revisión de frenos", ACTOR);
 
         // Reparte las fechas de las ordenes a lo largo de las ultimas semanas
         fechas(h1, 128, 127);
