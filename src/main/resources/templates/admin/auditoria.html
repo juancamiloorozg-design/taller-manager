@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Auditoría', ~{::section})}">
+<body>
+<section>
+    <h1 class="h3 mb-3">Auditoría</h1>
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Elemento</th><th>Detalle</th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${pagina.content}">
+                <td th:text="${#temporals.format(a.fecha, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                <td th:text="${a.usuario}"></td>
+                <td th:text="${a.accion}"></td>
+                <td th:text="${a.entidad + (a.entidadId != null ? ' #' + a.entidadId : '')}"></td>
+                <td th:text="${a.detalle}"></td>
+            </tr>
+            <tr th:if="${pagina.empty}"><td colspan="5" class="text-center text-muted py-4">Sin registros.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:replace="~{fragments/paginacion :: paginacion(${pagina}, ${urlBase}, '', '')}"></th:block>
+</section>
+</body>
+</html>

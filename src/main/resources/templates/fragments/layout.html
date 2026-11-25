@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(titulo, contenido)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0f3a52">
+    <title th:text="${titulo} + ' | Taller Manager'">Taller Manager</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body th:classappend="${#authorization.expression('isAuthenticated()')} ? '' : 'publico'">
+
+    <div class="aviso-demo no-print" th:if="${demo != null}">
+        Versión de demostración con datos ficticios. Lo que cambies se borra cada <span th:text="${demo.horas}">6</span> horas.
+    </div>
+
+<!-- Con sesion: menu lateral -->
+<div class="app" sec:authorize="isAuthenticated()">
+    <div class="barra-movil d-flex d-lg-none no-print">
+        <a class="marca" th:href="@{/}">Taller Manager</a>
+        <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+                aria-controls="menu" aria-expanded="false">Menú</button>
+    </div>
+
+    <aside id="menu" class="sidebar collapse d-lg-flex no-print">
+        <a class="marca d-none d-lg-block" th:href="@{/}">Taller Manager
+            <small th:text="${empresa != null ? empresa.nombre : ''}">Taller</small></a>
+
+        <form th:action="@{/buscar}" method="get" class="buscador" role="search">
+            <input type="search" name="q" class="form-control form-control-sm" maxlength="60"
+                   placeholder="Placa, cliente u orden" aria-label="Buscar en todo el sistema">
+        </form>
+
+        <nav class="menu-grupo" aria-label="Principal">
+            <a class="menu-link" th:href="@{/}">Panel</a>
+            <a class="menu-link" th:href="@{/ordenes}">Órdenes</a>
+            <a class="menu-link" th:href="@{/clientes}">Clientes</a>
+            <a class="menu-link" th:href="@{/vehiculos}">Vehículos</a>
+            <a class="menu-link" th:href="@{/repuestos}">Repuestos</a>
+            <a class="menu-link" th:href="@{/recordatorios}">Recordatorios</a>
+        </nav>
+
+        <nav class="menu-grupo" aria-label="Administración" sec:authorize="hasRole('ADMIN')">
+            <span class="menu-titulo">Administración</span>
+            <a class="menu-link" th:href="@{/informes}">Informes</a>
+            <a class="menu-link" th:href="@{/usuarios}">Usuarios</a>
+            <a class="menu-link" th:href="@{/admin/auditoria}">Auditoría</a>
+            <a class="menu-link" th:href="@{/admin/respaldos}">Respaldos</a>
+        </nav>
+
+        <div class="menu-usuario">
+            <div class="nombre" sec:authentication="principal.nombre">Usuario</div>
+            <a th:href="@{/cuenta/password}">Cambiar contraseña</a>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-outline-light btn-sm btn-salir w-100">Salir</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="app-main">
+        <main class="contenido">
+            <div class="no-print">
+                <div th:if="${mensajeExito}" class="alert alert-success" role="alert" th:text="${mensajeExito}"></div>
+                <div th:if="${mensajeError}" class="alert alert-danger" role="alert" th:text="${mensajeError}"></div>
+            </div>
+            <th:block th:replace="${contenido}"></th:block>
+        </main>
+        <footer class="app-footer no-print">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+                <span th:text="${empresa != null ? empresa.nombre : 'Taller Manager'}">Taller Manager</span>
+                <span class="d-flex flex-wrap gap-3">
+                    <a th:href="@{/legal/privacidad}">Política de tratamiento de datos</a>
+                    <a th:href="@{/legal/aviso-privacidad}">Aviso de privacidad</a>
+                    <a th:href="@{/legal/terminos}">Términos de uso</a>
+                    <a th:href="@{/legal/cookies}">Cookies</a>
+                </span>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Sin sesion: ingreso y textos legales -->
+<div sec:authorize="!isAuthenticated()">
+    <div class="barra-publica no-print">
+        <div class="container"><a class="marca" th:href="@{/}">Taller Manager</a></div>
+    </div>
+    <main class="contenido container">
+        <div class="no-print">
+            <div th:if="${mensajeExito}" class="alert alert-success" role="alert" th:text="${mensajeExito}"></div>
+            <div th:if="${mensajeError}" class="alert alert-danger" role="alert" th:text="${mensajeError}"></div>
+        </div>
+        <th:block th:replace="${contenido}"></th:block>
+    </main>
+    <footer class="app-footer no-print">
+        <div class="container d-flex flex-wrap justify-content-between gap-2">
+            <span th:text="${empresa != null ? empresa.nombre : 'Taller Manager'}">Taller Manager</span>
+            <span class="d-flex flex-wrap gap-3">
+                <a th:href="@{/legal/privacidad}">Política de tratamiento de datos</a>
+                <a th:href="@{/legal/aviso-privacidad}">Aviso de privacidad</a>
+                <a th:href="@{/legal/terminos}">Términos de uso</a>
+                <a th:href="@{/legal/cookies}">Cookies</a>
+            </span>
+        </div>
+    </footer>
+</div>
+
+<script th:src="@{/vendor/bootstrap/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

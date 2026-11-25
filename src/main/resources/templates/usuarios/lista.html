@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Usuarios', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Usuarios</h1>
+        <a class="btn btn-primary" th:href="@{/usuarios/nuevo}">Nuevo usuario</a>
+    </div>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Último acceso</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${usuarios}">
+                <td th:text="${u.nombre}"></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.rol.etiqueta}"></td>
+                <td>
+                    <span class="badge" th:classappend="${u.activo} ? 'text-bg-success' : 'text-bg-secondary'"
+                          th:text="${u.activo} ? 'Activo' : 'Inactivo'"></span>
+                    <span class="badge text-bg-warning" th:if="${u.estaBloqueado()}">Bloqueado</span>
+                </td>
+                <td th:text="${u.ultimoAcceso != null} ? ${#temporals.format(u.ultimoAcceso, 'dd/MM/yyyy HH:mm')} : 'Nunca'"></td>
+                <td>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <form th:action="@{/usuarios/{id}/estado(id=${u.id})}" method="post" class="m-0"
+                              th:attr="data-confirm=${u.activo} ? '¿Desactivar este usuario?' : '¿Activar este usuario?'">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                    th:text="${u.activo} ? 'Desactivar' : 'Activar'">Desactivar</button>
+                        </form>
+                        <form th:action="@{/usuarios/{id}/password(id=${u.id})}" method="post"
+                              class="d-flex gap-2 m-0" data-confirm="¿Restablecer la contraseña de este usuario?">
+                            <input type="password" name="nuevaPassword" class="form-control form-control-sm ancho-clave"
+                                   placeholder="Nueva contraseña" minlength="10" maxlength="72"
+                                   autocomplete="new-password" required aria-label="Nueva contraseña">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Restablecer</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

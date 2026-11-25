@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout('Repuestos', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Repuestos</h1>
+        <a class="btn btn-primary" th:href="@{/repuestos/nuevo}">Nuevo repuesto</a>
+    </div>
+
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr><th>Código</th><th>Nombre</th><th class="text-end">Precio</th><th class="text-end">Stock</th><th>Estado</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${repuestos}" th:classappend="${!r.activo} ? 'text-muted'">
+                <td th:text="${r.codigo != null} ? ${r.codigo} : '-'"></td>
+                <td th:text="${r.nombre}"></td>
+                <td class="text-end" th:text="${@fmt.cop(r.precio)}"></td>
+                <td class="text-end">
+                    <span th:text="${r.stock}"></span>
+                    <span class="badge text-bg-warning" th:if="${r.activo and r.stockBajo}">Bajo</span>
+                </td>
+                <td><span class="badge" th:classappend="${r.activo} ? 'text-bg-success' : 'text-bg-secondary'"
+                          th:text="${r.activo} ? 'Activo' : 'Inactivo'"></span></td>
+                <td>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/repuestos/{id}/editar(id=${r.id})}">Editar</a>
+                        <form th:action="@{/repuestos/{id}/stock(id=${r.id})}" method="post" class="d-flex gap-1 m-0"
+                              sec:authorize="hasRole('ADMIN')" data-confirm="¿Ajustar el stock de este repuesto?">
+                            <input type="number" name="stock" min="0" class="form-control form-control-sm ancho-numero"
+                                   th:value="${r.stock}" aria-label="Nuevo stock" required>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Ajustar</button>
+                        </form>
+                        <form th:action="@{/repuestos/{id}/activo(id=${r.id})}" method="post" class="m-0"
+                              sec:authorize="hasRole('ADMIN')">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                    th:text="${r.activo} ? 'Desactivar' : 'Activar'">Desactivar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(repuestos)}"><td colspan="6" class="text-center text-muted py-4">Todavía no hay repuestos.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

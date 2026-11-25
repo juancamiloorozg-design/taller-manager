@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${edicion} ? 'Editar cliente' : 'Nuevo cliente', ~{::section})}">
+<body>
+<section class="caja-form">
+    <h1 class="h3 mb-3" th:text="${edicion} ? 'Editar cliente' : 'Nuevo cliente'">Nuevo cliente</h1>
+
+    <form th:action="${edicion} ? @{/clientes/{id}(id=${clienteId})} : @{/clientes}" th:object="${clienteForm}"
+          method="post" class="card card-body" novalidate>
+        <div class="row g-3">
+            <div class="col-sm-4">
+                <label for="tipoDocumento" class="form-label">Tipo de documento</label>
+                <select id="tipoDocumento" class="form-select" th:field="*{tipoDocumento}">
+                    <option value="CC">Cédula de ciudadanía</option>
+                    <option value="CE">Cédula de extranjería</option>
+                    <option value="NIT">NIT</option>
+                    <option value="PA">Pasaporte</option>
+                    <option value="TI">Tarjeta de identidad</option>
+                </select>
+            </div>
+            <div class="col-sm-8">
+                <label for="numeroDocumento" class="form-label">Número de documento</label>
+                <input id="numeroDocumento" type="text" class="form-control" th:field="*{numeroDocumento}" maxlength="20"
+                       th:classappend="${#fields.hasErrors('numeroDocumento')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('numeroDocumento')}" th:errors="*{numeroDocumento}"></div>
+            </div>
+            <div class="col-12">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input id="nombre" type="text" class="form-control" th:field="*{nombre}" maxlength="120"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input id="telefono" type="tel" class="form-control" th:field="*{telefono}" maxlength="20"
+                       th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="email" class="form-label">Correo</label>
+                <input id="email" type="email" class="form-control" th:field="*{email}" maxlength="120"
+                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+            <div class="col-12">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input id="direccion" type="text" class="form-control" th:field="*{direccion}" maxlength="200"
+                       th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
+            </div>
+        </div>
+
+        <div class="border rounded p-3 mt-4 bg-light" th:unless="${edicion}">
+            <p class="mb-2 small">
+                <span th:text="${empresa.nombre}">El taller</span> tratará estos datos para gestionar las órdenes de servicio,
+                avisar al cliente cuando su vehículo esté listo, recordarle su próximo mantenimiento y atender garantías. El titular puede consultar, corregir o pedir la
+                supresión de sus datos en cualquier momento. Lee la
+                <a th:href="@{/legal/aviso-privacidad}" target="_blank" rel="noopener">política de tratamiento</a> con el cliente antes de continuar.
+            </p>
+            <div class="form-check">
+                <input id="autorizaDatos" type="checkbox" class="form-check-input" th:field="*{autorizaDatos}">
+                <label for="autorizaDatos" class="form-check-label">
+                    El cliente fue informado y autoriza el tratamiento de sus datos personales.
+                </label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary" th:text="${edicion} ? 'Guardar cambios' : 'Registrar cliente'">Guardar</button>
+            <a class="btn btn-outline-secondary" th:href="${edicion} ? @{/clientes/{id}(id=${clienteId})} : @{/clientes}">Cancelar</a>
+        </div>
+    </form>
+</section>
+</body>
+</html>

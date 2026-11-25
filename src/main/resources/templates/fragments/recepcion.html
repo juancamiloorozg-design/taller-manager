@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="campos">
+    <h2 class="h6 mt-4">Recepción del vehículo</h2>
+    <p class="form-text">Anota cómo llega el carro. Si después hay un reclamo, esto es lo que se revisa.</p>
+    <div class="row g-3">
+        <div class="col-sm-6">
+            <label for="nivelCombustible" class="form-label">Combustible</label>
+            <select id="nivelCombustible" class="form-select" th:field="*{nivelCombustible}">
+                <option value="">Sin registrar</option>
+                <option th:each="n : ${niveles}" th:value="${n}" th:text="${n.etiqueta}"></option>
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label for="mecanicoId" class="form-label">Mecánico asignado</label>
+            <select id="mecanicoId" class="form-select" th:field="*{mecanicoId}">
+                <option value="">Sin asignar</option>
+                <option th:each="m : ${mecanicos}" th:value="${m.id}" th:text="${m.nombre}"></option>
+            </select>
+        </div>
+        <div class="col-12">
+            <label for="danosVisibles" class="form-label">Daños o detalles que se ven</label>
+            <textarea id="danosVisibles" rows="2" class="form-control" th:field="*{danosVisibles}" maxlength="500"
+                      placeholder="Rayón en puerta trasera derecha, farola rota, etc."></textarea>
+        </div>
+        <div class="col-12">
+            <label for="objetosDejados" class="form-label">Objetos que quedan en el vehículo</label>
+            <textarea id="objetosDejados" rows="2" class="form-control" th:field="*{objetosDejados}" maxlength="500"
+                      placeholder="Llanta de repuesto, gato, documentos, etc."></textarea>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

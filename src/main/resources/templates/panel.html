@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout('Panel', ~{::section})}">
+<body>
+<section>
+    <div class="encabezado-panel">
+        <h1 class="h3 mb-0">Taller hoy</h1>
+        <a class="btn btn-primary" th:href="@{/ordenes/nueva}">Nueva orden</a>
+    </div>
+
+    <div class="tablero">
+        <div class="tablero-columna" th:each="col : ${abiertas}">
+            <div class="tablero-titulo">
+                <span><span class="badge" th:classappend="'text-bg-' + ${col.key.color}" th:text="${col.key.etiqueta}"></span></span>
+                <span class="cuenta" th:text="${#lists.size(col.value)}">0</span>
+            </div>
+            <div class="ficha" th:each="o : ${col.value}">
+                <a th:href="@{/ordenes/{id}(id=${o.id})}">
+                    <span class="placa" th:text="${o.vehiculo.placa}"></span>
+                    <div class="ficha-datos">
+                        <div th:text="${o.vehiculo.marca + ' ' + o.vehiculo.modelo}"></div>
+                        <div class="text-muted" th:text="${o.vehiculo.cliente.nombre}"></div>
+                    </div>
+                    <div class="ficha-pie">
+                        <span th:text="${o.mecanico != null ? o.mecanico.nombre : 'Sin mecánico'}"></span>
+                        <span th:text="${@fmt.cop(o.total)}"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="tablero-vacio" th:if="${#lists.isEmpty(col.value)}">Sin órdenes en este estado.</div>
+        </div>
+    </div>
+
+    <div class="resumen">
+        <div class="resumen-dato"><div class="resumen-valor" th:text="${@fmt.cop(finalizadoMes)}">$ 0</div><div class="resumen-etiqueta">Finalizado este mes</div></div>
+        <a class="resumen-dato" th:href="@{/recordatorios}"><div class="resumen-valor" th:text="${recordatorios}">0</div><div class="resumen-etiqueta">Vehículos por contactar</div></a>
+        <a class="resumen-dato" sec:authorize="hasRole('ADMIN')" th:href="@{/informes}"><div class="resumen-valor" th:text="${@fmt.cop(porCobrar)}">$ 0</div><div class="resumen-etiqueta">Por cobrar</div></a>
+        <div class="resumen-dato"><div class="resumen-valor" th:text="${totalClientes}">0</div><div class="resumen-etiqueta" th:text="'Clientes, ' + ${totalVehiculos} + ' vehículos'">Clientes</div></div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-7">
+            <h2 class="h5">Órdenes recientes</h2>
+            <div class="table-tarjeta table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead><tr><th>Orden</th><th>Vehículo</th><th>Estado</th><th class="text-end">Total</th></tr></thead>
+                    <tbody>
+                    <tr th:each="o : ${recientes}">
+                        <td><a th:href="@{/ordenes/{id}(id=${o.id})}" th:text="'#' + ${o.id}"></a></td>
+                        <td><span class="placa" th:text="${o.vehiculo.placa}"></span> <span th:text="${o.vehiculo.cliente.nombre}"></span></td>
+                        <td><span class="badge" th:classappend="'text-bg-' + ${o.estado.color}" th:text="${o.estado.etiqueta}"></span></td>
+                        <td class="text-end" th:text="${@fmt.cop(o.total)}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recientes)}"><td colspan="4" class="text-center text-muted py-3">Aún no hay órdenes.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <h2 class="h5">Repuestos con poco stock</h2>
+            <div class="table-tarjeta table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead><tr><th>Repuesto</th><th class="text-end">Stock</th><th class="text-end">Mínimo</th></tr></thead>
+                    <tbody>
+                    <tr th:each="r : ${stockBajo}">
+                        <td th:text="${r.nombre}"></td>
+                        <td class="text-end" th:text="${r.stock}"></td>
+                        <td class="text-end" th:text="${r.stockMinimo}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(stockBajo)}"><td colspan="3" class="text-center text-muted py-3">Todo el inventario está por encima del mínimo.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

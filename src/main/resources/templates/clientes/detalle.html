@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout('Cliente', ~{::section})}">
+<body>
+<section>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0" th:text="${cliente.nombre}">Cliente</h1>
+        <div class="d-flex gap-2" th:unless="${cliente.anonimizado}">
+            <a class="btn btn-outline-secondary" th:href="@{/clientes/{id}/editar(id=${cliente.id})}">Editar</a>
+            <a class="btn btn-primary" th:href="@{/vehiculos/nuevo(clienteId=${cliente.id})}">Agregar vehículo</a>
+        </div>
+    </div>
+
+    <div class="alert alert-secondary" th:if="${cliente.anonimizado}">
+        Los datos personales de este cliente fueron eliminados. Solo queda el historial de órdenes, sin identificar a la persona.
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card card-body h-100">
+                <h2 class="h6 text-uppercase text-muted">Datos</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Documento</dt>
+                    <dd class="col-sm-8" th:text="${cliente.anonimizado} ? '-' : ${cliente.tipoDocumento + ' ' + cliente.numeroDocumento}"></dd>
+                    <dt class="col-sm-4">Teléfono</dt>
+                    <dd class="col-sm-8" th:text="${cliente.telefono != null} ? ${cliente.telefono} : '-'"></dd>
+                    <dt class="col-sm-4">Correo</dt>
+                    <dd class="col-sm-8" th:text="${cliente.email != null} ? ${cliente.email} : '-'"></dd>
+                    <dt class="col-sm-4">Dirección</dt>
+                    <dd class="col-sm-8" th:text="${cliente.direccion != null} ? ${cliente.direccion} : '-'"></dd>
+                </dl>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-body h-100">
+                <h2 class="h6 text-uppercase text-muted">Autorización de datos</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Autorizó</dt>
+                    <dd class="col-sm-7" th:text="${cliente.autorizaDatos} ? 'Sí' : 'No'"></dd>
+                    <dt class="col-sm-5">Fecha</dt>
+                    <dd class="col-sm-7" th:text="${cliente.fechaAutorizacion != null} ? ${#temporals.format(cliente.fechaAutorizacion, 'dd/MM/yyyy HH:mm')} : '-'"></dd>
+                    <dt class="col-sm-5">Política versión</dt>
+                    <dd class="col-sm-7" th:text="${cliente.versionPolitica != null} ? ${cliente.versionPolitica} : '-'"></dd>
+                    <dt class="col-sm-5">Registrada por</dt>
+                    <dd class="col-sm-7" th:text="${cliente.registradoPor != null} ? ${cliente.registradoPor} : '-'"></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h5 mt-4">Vehículos</h2>
+    <div class="table-tarjeta table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>Placa</th><th>Marca y modelo</th><th>Año</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="v : ${vehiculos}">
+                <td><span class="placa" th:text="${v.placa}"></span></td>
+                <td th:text="${v.marca + ' ' + v.modelo}"></td>
+                <td th:text="${v.anio}"></td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-secondary" th:href="@{/vehiculos/{id}(id=${v.id})}">Ver</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(vehiculos)}"><td colspan="4" class="text-center text-muted py-3">Sin vehículos registrados.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card card-body mt-4 no-print" sec:authorize="hasRole('ADMIN')" th:unless="${cliente.anonimizado}">
+        <h2 class="h6 text-uppercase text-muted">Derechos del titular (Ley 1581 de 2012)</h2>
+        <p class="small mb-3">Úsalos cuando el cliente pida por escrito ver sus datos o que se eliminen. Cada acción queda en la auditoría.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" th:href="@{/clientes/{id}/datos.txt(id=${cliente.id})}">Descargar sus datos</a>
+            <form th:action="@{/clientes/{id}/anonimizar(id=${cliente.id})}" method="post" class="m-0"
+                  data-confirm="Esto borra los datos personales del cliente y no se puede deshacer. ¿Continuar?">
+                <button type="submit" class="btn btn-outline-danger">Eliminar sus datos personales</button>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>
